@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TrackWeightActivity">
+
+    <TextView
+        android:id="@+id/currentUserTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zalogowany jako: "/>
+
+    <Button
+        android:id="@+id/submitWeightButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zatwierdź wagę" />
+
+    <EditText
+        android:id="@+id/weightInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="Wprowadź wagę" />
+
+    <Button
+        android:id="@+id/pickDateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wybierz datę" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/weightHistoryRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

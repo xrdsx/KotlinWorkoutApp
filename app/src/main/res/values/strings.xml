@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TrainApp</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="age">Age</string>
+    <string name="register">Register</string>
+    <string name="back">Back</string>
+</resources>
