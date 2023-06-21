@@ -11,7 +11,8 @@ data class User(
     var age: Int,
     var weightHistory: MutableList<WeightUser> = mutableListOf(),
     val trainingHistory: MutableList<TrainingHistoryEntry> = mutableListOf(),
-    val goals: MutableList<Goal> = mutableListOf()  // New field
+    val goals: MutableList<Goal> = mutableListOf(),
+
 ) {
     companion object {
         val allUsers = mutableListOf<User>().apply {
@@ -79,9 +80,17 @@ data class User(
             return false
         }
 
-        println("Logowanie użytkownika $email.")
-        // logika logowania użytkownika
-        return true
+        // Sprawdź, czy użytkownik istnieje
+        val userExists = allUsers.any { it.email == email && it.password == password }
+
+        if (userExists) {
+            println("Logowanie użytkownika $email.")
+            // logika logowania użytkownika
+            return true
+        } else {
+            println("Nie znaleziono użytkownika $email.")
+            return false
+        }
     }
 
     fun logout() {

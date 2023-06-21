@@ -5,11 +5,7 @@
     android:orientation="vertical"
     tools:context=".TrackWeightActivity">
 
-    <TextView
-        android:id="@+id/currentUserTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Zalogowany jako: "/>
+
 
     <Button
         android:id="@+id/submitWeightButton"

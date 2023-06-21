@@ -20,19 +20,22 @@ class TrainingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_training)
 
+        val userId = intent.getIntExtra("USER_ID", -1)   // Get userId from Intent
+        val userTrainings = trainingList.filter { it.userId == userId }
+
         // initialize Button and ListView
         val addButton: Button = findViewById(R.id.addTrainingButton)
         listView = findViewById(R.id.trainingList)
 
         // create an TrainingAdapter to link your ListView with the Training data
-        trainingAdapter = TrainingAdapter(this, trainingList)
-
+        trainingAdapter = TrainingAdapter(this, userTrainings)
         // set adapter to the ListView
         listView.adapter = trainingAdapter
 
         // handle button click to open AddTrainingActivity
         addButton.setOnClickListener {
             val intent = Intent(this, AddTrainingActivity::class.java)
+            intent.putExtra("USER_ID", userId)
             startActivity(intent)
         }
 
@@ -40,7 +43,17 @@ class TrainingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        val userId = intent.getIntExtra("USER_ID", -1)   // Get userId from Intent
+        val userTrainings = trainingList.filter { it.userId == userId }
+
+        // create an TrainingAdapter to link your ListView with the Training data
+        trainingAdapter = TrainingAdapter(this, userTrainings)
+        // set adapter to the ListView
+        listView.adapter = trainingAdapter
+
         // notify ListView to update its view because the data has changed
         trainingAdapter.notifyDataSetChanged()
+
     }
 }

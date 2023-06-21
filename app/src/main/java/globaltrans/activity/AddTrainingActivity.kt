@@ -28,6 +28,8 @@ class AddTrainingActivity : AppCompatActivity() {
         // Show back button in action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val userId = intent.getIntExtra("USER_ID", -1)   // Get userId from Intent
+
         trainingNameEditText = findViewById(R.id.trainingNameEditText)
         exerciseSpinner = findViewById(R.id.exerciseSpinner)
         setsEditText = findViewById(R.id.setsEditText)
@@ -35,11 +37,14 @@ class AddTrainingActivity : AppCompatActivity() {
         addExerciseButton = findViewById(R.id.addExerciseButton)
         submitTrainingButton = findViewById(R.id.submitTrainingButton)
 
-        // Fill Spinner with exercise names
-        val exerciseNames = Exercise.exerciseList.map { it.nameOfExercise }
+        // Fill Spinner with exercise names created by the user
+        val exerciseNames = Exercise.exerciseList
+            .filter { it.userId == userId }
+            .map { it.nameOfExercise }
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, exerciseNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         exerciseSpinner.adapter = adapter
+
         exercisesListView = findViewById(R.id.exercisesListView)
         exercisesAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf<String>())
         exercisesListView.adapter = exercisesAdapter
@@ -89,7 +94,9 @@ class AddTrainingActivity : AppCompatActivity() {
             return
         }
 
-        val newTraining = Training(Training.trainingList.size + 1, nameOfTraining, exercisesInTraining)
+        val userId = intent.getIntExtra("USER_ID", -1)   // Get userId from Intent
+
+        val newTraining = Training(Training.trainingList.size + 1, userId, nameOfTraining, exercisesInTraining)
         Training.trainingList.add(newTraining)
 
         Toast.makeText(this, "Training submitted", Toast.LENGTH_SHORT).show()

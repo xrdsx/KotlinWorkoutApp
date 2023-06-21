@@ -20,20 +20,25 @@ class ExerciseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise)
 
+        val userId = intent.getIntExtra("USER_ID", -1)   // Get userId from Intent
+        val userExercises = Exercise.exerciseList.filter { it.userId == userId }.toMutableList()
+
         nameOfExerciseEditText = findViewById(R.id.etNameOfExercise)
         createExerciseButton = findViewById(R.id.btnCreateExercise)
         exerciseListRecyclerView = findViewById(R.id.rvExerciseList)
 
-        exerciseAdapter = ExerciseAdapter(Exercise.exerciseList)
+        exerciseAdapter = ExerciseAdapter(userExercises)
         exerciseListRecyclerView.layoutManager = LinearLayoutManager(this)
         exerciseListRecyclerView.adapter = exerciseAdapter
 
         createExerciseButton.setOnClickListener {
             val nameOfExercise = nameOfExerciseEditText.text.toString()
 
-            // Przykładowe wykorzystanie enuma PartBody do tworzenia ćwiczenia
-            Exercise.createExercise(nameOfExercise)
+            // Create exercise for this user
+            Exercise.createExercise(userId, nameOfExercise)
 
+            // Update the list of exercises for this user
+            exerciseAdapter.exerciseList = Exercise.exerciseList.filter { it.userId == userId }.toMutableList()
             exerciseAdapter.notifyDataSetChanged()
         }
     }

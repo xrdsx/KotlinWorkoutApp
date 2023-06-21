@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import globaltrans.activity.Model.Exercise
 import globaltrans.activity.R
 
-class ExerciseAdapter(private val exerciseList: MutableList<Exercise>) :
+class ExerciseAdapter(var exerciseList: MutableList<Exercise>) :
     RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder>() {
 
     class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

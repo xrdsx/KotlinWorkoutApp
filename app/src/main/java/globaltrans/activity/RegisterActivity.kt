@@ -37,5 +37,13 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Pobierz referencję do przycisku "back"
+        val backButton = findViewById<Button>(R.id.backButton)
+
+        // Ustaw obsługę kliknięcia przycisku "back"
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
     }
 }

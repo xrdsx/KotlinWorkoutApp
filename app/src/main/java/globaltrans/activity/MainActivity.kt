@@ -25,11 +25,17 @@ class MainActivity : AppCompatActivity() {
 
             if (user != null) {
                 val intent = Intent(this, MenuActivity::class.java)
-                intent.putExtra("USER_ID", user.id) // przekazanie ID użytkownika
+                intent.putExtra("USER_ID", user.id) // Przekazanie ID użytkownika
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val btnRegisterUsers = findViewById<Button>(R.id.btnRegisterUsers)
+        btnRegisterUsers.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 }

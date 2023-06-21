@@ -11,42 +11,12 @@
         android:id="@+id/tvWelcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Witaj, nazwa użytkownika zalogowanego"
+        android:text="Witaj !"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:gravity="center"
         android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnRegisterUsers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Rejestracja użytkowników"
-        android:textColor="@android:color/white"
-        android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:padding="8dp" />
-
-    <Button
-        android:id="@+id/btnManageUsers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Zarządzanie użytkownikami"
-        android:textColor="@android:color/white"
-        android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/btnShareProgress"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:padding="8dp" />
 
     <Button
         android:id="@+id/btnAddTraining"
@@ -55,7 +25,7 @@
         android:text="Dodawanie treningów"
         android:textColor="@android:color/white"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/btnRegisterUsers"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcome"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
@@ -101,7 +71,7 @@
         android:text="Zarządzanie ćwiczeniami"
         android:textColor="@android:color/white"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/btnManageUsers"
+        app:layout_constraintTop_toBottomOf="@id/btnShareProgress"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
@@ -132,6 +102,21 @@
         android:textColor="@android:color/white"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/btnTrackWeightActivity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Wyloguj"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/btnPlanTraining"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"

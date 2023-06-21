@@ -13,19 +13,22 @@ class ProgressActivity : AppCompatActivity() {
         val tvTrainingProgress = findViewById<TextView>(R.id.tvTrainingProgress)
         val tvGoals = findViewById<TextView>(R.id.tvGoals)
 
-        val loggedInUser = User.allUsers[0]  // get the logged in user, this is just a placeholder
+        val userId = intent.getIntExtra("USER_ID", -1)  // Get userId from Intent
+        val loggedInUser = User.allUsers.find { it.id == userId }  // find the logged in user by userId
 
-        // Show training progress
-        val completedTrainings = loggedInUser.trainingHistory.filter { it.training.completedCount > 0 }
-        val trainingProgressStr = completedTrainings.joinToString("\n") {
-            "Trening ${it.training.nameOfTraining}, został zrobiony ${it.training.completedCount} "
-        }
-        tvTrainingProgress.text = trainingProgressStr
+        if (loggedInUser != null) {
+            // Show training progress
+            val completedTrainings = loggedInUser.trainingHistory.filter { it.training.completedCount > 0 }
+            val trainingProgressStr = completedTrainings.joinToString("\n") {
+                "Trening ${it.training.nameOfTraining}, został zrobiony ${it.training.completedCount} "
+            }
+            tvTrainingProgress.text = trainingProgressStr
 
-        // Show goals
-        val goalsStr = loggedInUser.goals.joinToString("\n") {
-            "Goal: ${it.type.name}, Target: ${it.target}, Progress: ${it.progress}"
+            // Show goals
+            val goalsStr = loggedInUser.goals.joinToString("\n") {
+                "Goal: ${it.type.name}, Target: ${it.target}, Progress: ${it.progress}"
+            }
+            tvGoals.text = goalsStr
         }
-        tvGoals.text = goalsStr
     }
 }

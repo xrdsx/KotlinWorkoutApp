@@ -27,64 +27,76 @@ class PlanTrainingActivity : AppCompatActivity() {
     private val scheduledTrainings = ScheduledTrainingsManager.scheduledTrainings
     private val availableTrainings = Training.trainingList.toMutableList()
 
+    private var loggedInUser: User? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_plan_training)
 
-        trainingSpinner = findViewById(R.id.trainingSpinner)
-        pickDateButton = findViewById(R.id.pickDateButton)
-        scheduleButton = findViewById(R.id.scheduleButton)
-        scheduledTrainingsListView = findViewById(R.id.scheduledTrainingsListView)
+        // Pobierz ID użytkownika z intentu
+        val userId = intent.getIntExtra("USER_ID", -1)
+        loggedInUser = User.allUsers.find { it.id == userId }
 
-        toggleVisibilityButton = findViewById(R.id.toggleVisibilityButton)
+        loggedInUser?.let { user ->
+            trainingSpinner = findViewById(R.id.trainingSpinner)
+            pickDateButton = findViewById(R.id.pickDateButton)
+            scheduleButton = findViewById(R.id.scheduleButton)
+            scheduledTrainingsListView = findViewById(R.id.scheduledTrainingsListView)
 
-        toggleVisibilityButton.setOnClickListener {
-            isVisible = !isVisible
-            updateScheduledTrainingsListView()
-        }
+            toggleVisibilityButton = findViewById(R.id.toggleVisibilityButton)
 
-        updateTrainingSpinner()
-        updateScheduledTrainingsListView()
-
-        pickDateButton.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val datePickerDialog = DatePickerDialog(
-                this,
-                { _: DatePicker, year: Int, month: Int, day: Int ->
-                    calendar.set(year, month, day)
-                    selectedDate = calendar.time
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePickerDialog.show()
-        }
-
-        scheduleButton.setOnClickListener {
-            val selectedTrainingName = trainingSpinner.selectedItem as String
-            val selectedTraining =
-                availableTrainings.find { it.nameOfTraining == selectedTrainingName }
-
-            if (selectedTraining != null && selectedDate != null) {
-                val newScheduledTraining = ScheduledTraining(selectedTraining, selectedDate!!)
-                scheduledTrainings.add(newScheduledTraining)
-                availableTrainings.remove(selectedTraining)
+            toggleVisibilityButton.setOnClickListener {
+                isVisible = !isVisible
                 updateScheduledTrainingsListView()
-                updateTrainingSpinner()
             }
-        }
 
+            updateTrainingSpinner(user)
+            updateScheduledTrainingsListView()
+
+            pickDateButton.setOnClickListener {
+                val calendar = Calendar.getInstance()
+                val datePickerDialog = DatePickerDialog(
+                    this,
+                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                        calendar.set(year, month, day)
+                        selectedDate = calendar.time
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePickerDialog.show()
+            }
+
+            scheduleButton.setOnClickListener {
+                val selectedTrainingName = trainingSpinner.selectedItem as String
+                val selectedTraining =
+                    availableTrainings.find { it.nameOfTraining == selectedTrainingName }
+
+                if (selectedTraining != null && selectedDate != null) {
+                    val newScheduledTraining = ScheduledTraining(selectedTraining, selectedDate!!)
+                    scheduledTrainings.add(newScheduledTraining)
+                    availableTrainings.remove(selectedTraining)
+                    updateScheduledTrainingsListView()
+                    updateTrainingSpinner(user)
+                }
+            }
+        } ?: run {
+            Toast.makeText(this, "Błąd podczas ładowania danych użytkownika", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 
-    private fun updateTrainingSpinner() {
+    private fun updateTrainingSpinner(user: User) {
+        val availableTrainingsForUser = availableTrainings.filter { it.userId == user.id }
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
-            availableTrainings.map { it.nameOfTraining }
+            availableTrainingsForUser.map { it.nameOfTraining }
         )
         trainingSpinner.adapter = adapter
     }
+
     private fun showTrainingInfo(scheduledTraining: ScheduledTraining) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(scheduledTraining.training.nameOfTraining)
@@ -105,7 +117,7 @@ class PlanTrainingActivity : AppCompatActivity() {
         val adapter = object : ArrayAdapter<ScheduledTraining>(
             this,
             R.layout.scheduled_training_list_item,
-            if (isVisible) scheduledTrainings else emptyList()
+            if (isVisible) scheduledTrainings.filter { it.training.userId == loggedInUser?.id } else emptyList()
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView ?: LayoutInflater.from(context)
@@ -129,33 +141,34 @@ class PlanTrainingActivity : AppCompatActivity() {
                 }
 
                 finishTrainingButton.setOnClickListener {
-                    val loggedInUser = User.allUsers[0]
-                    scheduledTraining?.let {
-                        if (it.isStarted) {
-                            it.isCompleted = true
-                            it.training.completedCount++ // Increment the completed count
+                    loggedInUser?.let { user ->
+                        scheduledTraining?.let {
+                            if (it.isStarted) {
+                                it.isCompleted = true
+                                it.training.completedCount++ // Increment the completed count
 
-                            // Add the training back to the available list
-                            availableTrainings.add(it.training)
+                                // Add the training back to the available list
+                                availableTrainings.add(it.training)
 
-                            // Create new history entry
-                            val newHistoryEntry = TrainingHistoryEntry(
-                                id = loggedInUser.trainingHistory.size + 1,
-                                userId = loggedInUser.id,
-                                date = Date(),
-                                training = it.training
-                            )
+                                // Create new history entry
+                                val newHistoryEntry = TrainingHistoryEntry(
+                                    id = user.trainingHistory.size + 1,
+                                    userId = user.id,
+                                    date = Date(),
+                                    training = it.training
+                                )
 
-                            // Add new history entry to user's training history
-                            loggedInUser.trainingHistory.add(newHistoryEntry)
+                                // Add new history entry to user's training history
+                                user.trainingHistory.add(newHistoryEntry)
 
-                            // Update training completion goals
-                            loggedInUser.goals.filter { it.type == GoalType.TrainingCompletion }.forEach { goal ->
-                                goal.progress++
+                                // Update training completion goals
+                                user.goals.filter { it.type == GoalType.TrainingCompletion }.forEach { goal ->
+                                    goal.progress++
+                                }
+
+                                // Update the spinner to reflect this change
+                                updateTrainingSpinner(user)
                             }
-
-                            // Update the spinner to reflect this change
-                            updateTrainingSpinner()
                         }
                     }
                     notifyDataSetChanged()

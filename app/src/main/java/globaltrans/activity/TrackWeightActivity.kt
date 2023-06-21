@@ -29,44 +29,49 @@ class TrackWeightActivity : AppCompatActivity() {
         val submitWeightButton = findViewById<Button>(R.id.submitWeightButton)
         val pickDateButton = findViewById<Button>(R.id.pickDateButton)
         weightHistoryRecyclerView = findViewById(R.id.weightHistoryRecyclerView)
-        val selectedDate = Calendar.getInstance()  // dodajemy to, żeby przechować wybraną datę
+        val selectedDate = Calendar.getInstance()
 
-        // Tymczasowo używamy pierwszego użytkownika jako zalogowanego użytkownika
-        val loggedInUser = User.allUsers[0]
-        currentUserTextView.text = "Zalogowany jako: ${loggedInUser.name}"
+        // Pobierz ID użytkownika z intentu
+        val userId = intent.getIntExtra("USER_ID", -1)
+        val loggedInUser = User.allUsers.find { it.id == userId }
 
-        weightHistoryAdapter = WeightHistoryAdapter(loggedInUser.weightHistory)
-        weightHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
-        weightHistoryRecyclerView.adapter = weightHistoryAdapter
+        if (loggedInUser != null) {
+            currentUserTextView.text = "Zalogowany jako: ${loggedInUser.name}"
 
-        pickDateButton.setOnClickListener {
-            // Wywołaj DatePickerDialog tutaj
-            val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                selectedDate.set(Calendar.YEAR, year)
-                selectedDate.set(Calendar.MONTH, month)
-                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                // Aktualizacja etykiety przycisku
-                pickDateButton.text = SimpleDateFormat("dd.MM.yyyy").format(selectedDate.time)
+            weightHistoryAdapter = WeightHistoryAdapter(loggedInUser.weightHistory)
+            weightHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+            weightHistoryRecyclerView.adapter = weightHistoryAdapter
+
+            pickDateButton.setOnClickListener {
+                val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    selectedDate.set(Calendar.YEAR, year)
+                    selectedDate.set(Calendar.MONTH, month)
+                    selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    pickDateButton.text = SimpleDateFormat("dd.MM.yyyy").format(selectedDate.time)
+                }
+                DatePickerDialog(this, dateSetListener,
+                    selectedDate.get(Calendar.YEAR),
+                    selectedDate.get(Calendar.MONTH),
+                    selectedDate.get(Calendar.DAY_OF_MONTH)
+                ).show()
             }
-            DatePickerDialog(this, dateSetListener,
-                selectedDate.get(Calendar.YEAR),
-                selectedDate.get(Calendar.MONTH),
-                selectedDate.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
 
-        submitWeightButton.setOnClickListener {
-            val weight = weightInput.text.toString().toFloatOrNull()
-            if (weight != null) {
-                val newWeightEntry = WeightUser(loggedInUser.weightHistory.size + 1, loggedInUser.id, selectedDate.time, weight)
-                newWeightEntry.previousWeight = loggedInUser.weightHistory.lastOrNull()?.weight
-                loggedInUser.weightHistory.add(newWeightEntry)
-                weightHistoryAdapter.notifyItemInserted(loggedInUser.weightHistory.size - 1)
-                Toast.makeText(this, "Dodano nowy wpis wagi", Toast.LENGTH_SHORT).show()
-                weightInput.text.clear()
-            } else {
-                Toast.makeText(this, "Wprowadź poprawną wagę", Toast.LENGTH_SHORT).show()
+            submitWeightButton.setOnClickListener {
+                val weight = weightInput.text.toString().toFloatOrNull()
+                if (weight != null) {
+                    val newWeightEntry = WeightUser(loggedInUser.weightHistory.size + 1, loggedInUser.id, selectedDate.time, weight)
+                    newWeightEntry.previousWeight = loggedInUser.weightHistory.lastOrNull()?.weight
+                    loggedInUser.weightHistory.add(newWeightEntry)
+                    weightHistoryAdapter.notifyItemInserted(loggedInUser.weightHistory.size - 1)
+                    Toast.makeText(this, "Dodano nowy wpis wagi", Toast.LENGTH_SHORT).show()
+                    weightInput.text.clear()
+                } else {
+                    Toast.makeText(this, "Wprowadź poprawną wagę", Toast.LENGTH_SHORT).show()
+                }
             }
+        } else {
+            Toast.makeText(this, "Błąd podczas ładowania danych użytkownika", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }
